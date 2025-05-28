@@ -1,0 +1,72 @@
+namespace NetworkInitial
+
+TaxonomyNetworkElement(TaxonomyNetworkElement): ConceptType
+	hypernymPredicate: isA
+
+NetworkElement(NetworkElement): EntityType
+	properties:
+		neID(neID): Text
+		neName(neName): Text
+		hasNetworkElement(hasNetworkElement):NetworkElement
+		IND#belongTo(belongTo): TaxonomyNetworkElement
+
+VirtualRoutingFunction(VirtualRoutingFunction): EntityType
+	properties:
+		vrfName(vrfName): Text
+		IND#belongTo(belongTo): TaxonomyNetworkElement
+
+Index(Index): ConceptType
+	hypernymPredicate: isA
+
+Trend(Trend): ConceptType
+	hypernymPredicate: isA
+
+TaxonomyForwardingPlane(TaxonomyForwardingPlane): ConceptType
+	hypernymPredicate: isA
+
+DroppedTrafficEvent(DroppedTrafficEvent): EventType
+	properties:
+		neID(neID): Text
+		subject(subject): NetworkElement
+		index(index): Index
+		trend(trend): Trend
+		time(time): STD.Date
+		ingressInterface(ingressInterface): Text
+		egressInterface(egressInterface): Text
+		sourceIPv4Adress(sourceIPv4Adress): Text
+		destinationIPv4Adress(destinationIPv4Adress): Text
+		vpnRouteDistinguisher(vpnRouteDistinguisher): Text
+		IND#belongTo(belongTo): TaxonomyForwardingPlane
+	relations:
+		CAU#leadTo(leadTo): TaxonomyForwardingPlane
+
+TaxonomyControlPlane(TaxonomControlPlane): ConceptType
+	hypernymPredicate: isA
+	relations:
+		CAU#leadTo(leadTo): TaxonomyForwardingPlane
+
+RouteWithdrawEvent(RouteWithdrawEvent): EventType
+	properties:
+		subject(subject): NetworkElement
+		index(index): Index
+		trend(trend): Trend
+		time(time): STD.Date
+		neID(neID): Text
+		routeDistinguisher(routeDistinguisher): Text
+		peerAddress(peerAddress): Text
+		isAdjRIBin(isAdjRIBin): Text
+		isAdjRIBout(isAdjRIBout): Text
+		IND#belongTo(belongTo): TaxonomyControlPlane
+	relations:
+		CAU#leadTo(leadTo): DroppedTrafficEvent		
+		noOfDevice(noOfDevice): NetworkElement
+			rule: [[
+					Define (s:RouteWithdrawEvent)-[p:noOfDevice]->(o:NetworkElement) {
+							Structure {
+								(s:RouteWithdrawEvent)-[n:subject]->(o:NetworkElement)
+							}
+							Constraint {
+								R1: s.id == 'CSF0000001579'
+							}
+						}
+    	    		]]
